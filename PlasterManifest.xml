@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<plasterManifest schemaVersion="1.1" templateType="Item" 
+    xmlns="http://www.microsoft.com/schemas/PowerShell/Plaster/v1">
+    <metadata>
+        <name>PowerShellModuleTemplate</name>
+        <id>5be2d273-38ad-40f5-a2ee-3a38b6d22096</id>
+        <version>1.0.0</version>
+        <title>PowerShell Module Template</title>
+        <description></description>
+        <author>it-joe</author>
+        <tags></tags>
+    </metadata>
+    <parameters>
+        <parameter name='AuthorName' type="user-fullname" prompt="Module author's name" />
+        <parameter name='AuthorEmail' type="user-email" prompt="Contributer/Owner email" />
+        <parameter name='ModuleName' type="text" prompt="Name of your module" />
+        <parameter name='ModuleDescription' type="text" prompt="Brief description on this module" />
+        <parameter name='ModuleVersion' type="text" prompt="Initial module version" default='0.0.1' />
+        <parameter name='ModuleFolders' type = 'multichoice' prompt='Please select folders to include' default='0,1'>
+            <choice label='&amp;Public' value='Public' help='Folder containing public functions'/>
+            <choice label='&amp;Private' value='Private' help='Folder containing private functions that are not exposed to users'/>
+            <choice label='&amp;Resources' value='Resources' help='Folder containing any resources required by the module'/>
+        </parameter>
+        <parameter name='GitIgnore' type = 'choice' prompt='Include .gitignore (powershell,visualstudio,visualstudiocode)?' default='0'>
+            <choice label='&amp;Yes' value='Yes' help='Include file'/>
+            <choice label='&amp;No' value='No' help='Do not include file'/>
+        </parameter>
+    </parameters>
+    <content>
+        <message>Creating code folders</message>
+        <file source='' destination='Public' condition='$PLASTER_PARAM_ModuleFolders -contains "Public"'/>
+        <file source='' destination='Private' condition='$PLASTER_PARAM_ModuleFolders -contains "Private"'/>
+        <file source='' destination='Resources' condition='$PLASTER_PARAM_ModuleFolders -contains "Resources"'/>
+        <message condition='$PLASTER_PARAM_GitIgnore -like "Yes"'>Adding .gitignore</message>
+        <file source='.gitignore' destination='' condition='$PLASTER_PARAM_GitIgnore -eq "Yes"'/>
+        <message>Deploying root directory files</message>
+        <file source='Module.psm1' destination='${PLASTER_PARAM_ModuleName}.psm1'/>
+        <templateFile source='MODULE_README.md' destination='README.MD'/>
+        <message>Creating module manifest</message>
+        <newModuleManifest destination='${PLASTER_PARAM_ModuleName}.psd1' moduleVersion='$PLASTER_PARAM_ModuleVersion' rootModule='${PLASTER_PARAM_ModuleName}.psm1' author='$PLASTER_PARAM_AuthorName' companyName='${PLASTER_PARAM_AuthorName}' description='$PLASTER_PARAM_ModuleDescription' encoding='UTF8-NoBOM'/>
+    </content>
+</plasterManifest>
